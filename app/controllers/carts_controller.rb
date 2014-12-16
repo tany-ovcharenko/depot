@@ -1,4 +1,12 @@
 class CartsController < ApplicationController
+  
+  rescue_from ActiveRecord::RecordNotFound, with: :invalid_cart
+    # GET /carts
+      def invalid_cart
+        logger.error "Attempt to access invalid cart #{params[:id]}"
+        redirect_to store_url, notice: 'Invalid cart'
+      end
+  
   before_action :set_cart, only: [:show, :edit, :update, :destroy]
   
  
@@ -17,6 +25,17 @@ class CartsController < ApplicationController
   # GET /carts/1.json
   def show
     @count = increment_count
+    #begin
+    #  @cart = Cart.find(params[:id])
+    #  rescue ActiveRecord::RecordNotFound
+    #      logger.error "Попытка доступа к несуществующей корзине #{params[:id]}"
+    #      redirect_to store_url, notice: 'Несуществующая корзина'
+    #  else
+    #      respond_to do |format|
+    #          format.html # show.html.erb
+    #          format.json { render json: @cart }
+    #  end
+   # end
   end
 
   # GET /carts/new
@@ -61,9 +80,11 @@ class CartsController < ApplicationController
   # DELETE /carts/1
   # DELETE /carts/1.json
   def destroy
+    @cart = current_cart
     @cart.destroy
+    session[:cart_id] = nil
     respond_to do |format|
-      format.html { redirect_to carts_url, notice: 'Cart was successfully destroyed.' }
+      format.html { redirect_to store_url, notice: 'Теперь ваша корзина пуста!'  }
       format.json { head :no_content }
     end
   end
