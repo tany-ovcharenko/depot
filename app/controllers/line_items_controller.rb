@@ -32,8 +32,11 @@ class LineItemsController < ApplicationController
     respond_to do |format|
       if @line_item.save
         session[:counter] = 0 
-        format.html { redirect_to @line_item.cart}
-        format.json { render :show, status: :created, location: @line_item }
+        #format.html { redirect_to @line_item.cart}
+        format.html { redirect_to store_url }
+        format.js { @current_item = @line_item }
+            format.json { render json: @line_item,
+                status: :created, location: @line_item }
       else
         format.html { render :new }
         format.json { render json: @line_item.errors, status: :unprocessable_entity }
@@ -58,6 +61,7 @@ class LineItemsController < ApplicationController
   # DELETE /line_items/1
   # DELETE /line_items/1.json
   def destroy
+    @line_item = LineItem.find(params[:id])
     @line_item.destroy
     respond_to do |format|
       format.html { redirect_to line_items_url, notice: 'Line item was successfully destroyed.' }

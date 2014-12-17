@@ -20,7 +20,7 @@ class LineItemsControllerTest < ActionController::TestCase
     assert_difference('LineItem.count') do
       post :create, product_id: products(:ruby).id
     end
-
+    assert_redirected_to store_path
     #assert_redirected_to line_item_path(assigns(:line_item).cart)
   end
 
@@ -46,4 +46,20 @@ class LineItemsControllerTest < ActionController::TestCase
 
     assert_redirected_to line_items_path
   end
+  
+  test "should create line_item via ajax" do
+      assert_difference('LineItem.count') do
+          xhr :post, :create, product_id: products(:ruby).id
+      end
+      assert_response :success
+      assert_select_jquery :html, '#cart' do
+          assert_select 'tr#current_item td', /Programming Ruby 1.9/
+      end
+  end
+  
+  test "markup needed for store.js.coffee is in place" do
+      get :index
+      assert_select '.store .entry > img', 3
+      assert_select '.entry input[type=submit]', 3
+  en
 end
