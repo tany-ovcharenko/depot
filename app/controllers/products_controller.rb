@@ -1,6 +1,12 @@
 class ProductsController < ApplicationController
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
+ def who_bought
+     @product = Product.find(params[:id])
+     respond_to do |format|
+         format.atom
+     end
+  end
   # GET /products
   # GET /products.json
   def index
